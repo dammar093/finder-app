@@ -20,117 +20,37 @@ import fontsizes from "@/constants/Fontsizes";
 import PostCard from "@/components/postCard/PostCard";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState, selectToken } from "@/redux/store";
-import property from "@/api/category";
 import { setCateGories } from "@/redux/slices/categorySlice";
+import category from "@/api/category";
+import property from "@/api/peroperty";
+import { setProperties } from "@/redux/slices/propertySlice";
 
-export interface User {
-  fullName: string;
-  role: string;
-  id: string;
-  profile: string;
-  year: number;
-  phoneNumber: string;
-}
-export interface Posts {
-  id: string;
-  title: string;
-  description: string;
-  images: string[];
-  location: string;
-  price: number;
-  user: User;
-  sevices: string[];
-  latitude: number;
-  longitude: number;
-}
-
-export const posts: Posts[] = [
-  {
-    id: "1",
-    title: "Marvel Boys Hostel",
-    description:
-      "We always love to extend a pleasurable stay and will be more than happy to show you around the area, for which tours & transportation can be arranged. We can also help to customise your trip based on your plan. Extra meals along with additional services like Laundry, Dry Cleaning, Photocopying, and Grocery deliveries can be arranged for on request. Customers are requested to respect the property and the rules of the BnB, the hotel staff will always be at your service. Thank You!",
-    images: [
-      "https://static01.nyt.com/images/2019/03/24/travel/24trending-shophotels1/24trending-shophotels1-superJumbo.jpg",
-      "https://www.hotelcontractbeds.co.uk/media/3183/hotel-room.jpg",
-    ],
-    location: "Kathmandu, Koteshwor",
-    latitude: 27.679976726701263,
-    longitude: 85.34573817370716,
-    price: 10000,
-    sevices: ["Free Wifi", "Free Water", "Free Electricity"],
-    user: {
-      id: "1",
-      fullName: "Dammar Singh Rana",
-      role: "user",
-      profile:
-        "https://pics.craiyon.com/2023-11-26/oMNPpACzTtO5OVERUZwh3Q.webp",
-      year: 10,
-      phoneNumber: "+9779824659193",
-    },
-  },
-  {
-    id: "2",
-    title: "Salon de Kathmandu B&B - Room",
-    description:
-      "Stay at safe and clean place during your stay in Kathmandu! Lazimpat is popular residential area for both foreign and wealthy local people because of its very clean, convenient and safe environment. The city center, Durbar Marg and Thamel, is all located in walking distance. Convenient location, safe area, super clean house with beautiful garden and good foods, any reason to hesitate? :)",
-    images: [
-      "https://www.thespruce.com/thmb/iMt63n8NGCojUETr6-T8oj-5-ns=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/PAinteriors-7-cafe9c2bd6be4823b9345e591e4f367f.jpg",
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDOwKx7dPv6Q8WkA3ZmEnDFab0hNV1Q35MGQ&s",
-    ],
-    location: "Latitpur, Balkumari",
-    latitude: 27.679976726701263,
-    longitude: 85.34573817370716,
-    price: 12000,
-    sevices: ["Free Wifi", "Free Water", "Free Electricity"],
-    user: {
-      id: "2",
-      fullName: "Deepak Raj Pandey",
-      role: "user",
-      profile:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTacBEOxzVt2idhxO0WXyuPKzHanDF8qupFBJSWQAuy0dk324BY92xqKOgh17AdWsx4-tk&usqp=CAU",
-      year: 8,
-      phoneNumber: "+9779862460349",
-    },
-  },
-  {
-    id: "3",
-    title: "Room",
-    description: "Room for rent in Kathmandu",
-    images: [
-      "https://gladstonehouse.agencydominion.net/uploads/2024/07/Book-Direct-rect-2.jpg",
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSUowi73UzREwbLtZw0Q26rkbfwj40IGy3IJg&s",
-    ],
-    location: "Kathmandu, New Baneshwor",
-    latitude: 27.679976726701263,
-    longitude: 85.34573817370716,
-    price: 20000,
-    sevices: ["Free Wifi", "Free Water", "Free Electricity"],
-    user: {
-      id: "3",
-      fullName: "Birendra Singh Rana",
-      role: "user",
-      profile:
-        "https://pics.craiyon.com/2024-07-09/HoDtX3s0SQefffp4FG5-3w.webp",
-      year: 5,
-      phoneNumber: "+9779824659193",
-    },
-  },
-];
 const Home = () => {
   const [index, setIndex] = React.useState(0);
   const { token } = useSelector(selectToken);
   const categories = useSelector(
     (state: RootState) => state.categories.categories
   );
-  const dispatch = useDispatch<AppDispatch>();
+  const properties = useSelector(
+    (state: RootState) => state.properties.properties
+  );
 
+  const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     // fetch categories from api
-    property
+    category
       .getCategories(token)
       .then((res) => {
         dispatch(setCateGories(res.data?.data));
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
+  useEffect(() => {
+    property
+      .getProperties(token)
+      .then((res) => {
+        dispatch(setProperties(res.data?.data));
       })
       .catch((err) => console.error(err));
   }, []);
@@ -236,9 +156,9 @@ const Home = () => {
           }}
         >
           <FlatList
-            data={posts}
-            renderItem={({ item }) => <PostCard {...item} key={item.id} />}
-            keyExtractor={(item) => item.id}
+            data={properties}
+            renderItem={({ item }) => <PostCard {...item} key={item._id} />}
+            keyExtractor={(item) => item._id}
             contentContainerStyle={{ paddingBottom: 65, gap: 20 }}
             showsVerticalScrollIndicator={false}
           />
@@ -280,7 +200,7 @@ const styles = StyleSheet.create({
     height: "80%",
     flexDirection: "row",
     paddingHorizontal: 5,
-    shadowColor: "#000",
+    shadowColor: color.balck,
     shadowOffset: {
       width: 0,
       height: 3,

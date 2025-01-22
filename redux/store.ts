@@ -4,6 +4,7 @@ import tokenReducer from "@/redux/slices/tokenSlice";
 import userReducer from "@/redux/slices/userSlice";
 import wishlistReducer from "@/redux/slices/wishlist";
 import categoryReducer from "@/redux/slices/categorySlice";
+import propertyReducer from "@/redux/slices/propertySlice";
 
 const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ const store = configureStore({
     user: userReducer,
     wishlist: wishlistReducer,
     categories: categoryReducer,
+    properties: propertyReducer
   },
 });
 

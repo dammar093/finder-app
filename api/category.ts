@@ -1,7 +1,7 @@
 import axios from "axios";
 
 
-const property = {
+const category = {
   getCategories: async (token: string) => {
     return await axios.get(`${process.env.EXPO_PUBLIC_API_URL}/categories`, {
       headers: {
@@ -10,4 +10,4 @@ const property = {
     });
   }
 }
-export default property;
+export default category;

@@ -9,7 +9,6 @@ import {
   NativeScrollEvent,
 } from "react-native";
 import React, { useState } from "react";
-import { Posts } from "@/app/(tabs)";
 import color from "@/constants/Colors";
 import fontsizes from "@/constants/Fontsizes";
 import AntDesign from "@expo/vector-icons/AntDesign";
@@ -18,8 +17,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import { togglePost } from "@/redux/slices/wishlist";
 import { Link } from "expo-router";
+import { Property } from "@/redux/slices/propertySlice";
 
-const PostCard = (props: Posts) => {
+const PostCard = (props: Property) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const dispatch = useDispatch<AppDispatch>();
   const wishlist = useSelector((state: RootState) => state.wishlist.posts);
@@ -48,11 +48,11 @@ const PostCard = (props: Posts) => {
             position: "relative",
           }}
         >
-          {props?.images.map((image, index) => (
+          {(props?.images ?? []).map((image, index) => (
             <Link
               href={{
                 pathname: "/(post)/[id]",
-                params: { id: props?.id },
+                params: { id: props?._id },
               }}
               key={index}
               style={{
@@ -71,7 +71,7 @@ const PostCard = (props: Posts) => {
           ))}
         </ScrollView>
         <View style={styles.dotsContainer}>
-          {props?.images.map((_, index) => (
+          {(props?.images ?? []).map((_, index) => (
             <View
               key={index}
               style={[
@@ -113,7 +113,7 @@ const PostCard = (props: Posts) => {
           >
             Rs. {props?.price}
           </Text>
-          <Text>/Month</Text>
+          <Text>/${props?.duration_type}</Text>
         </View>
       </View>
       <Pressable
@@ -125,12 +125,12 @@ const PostCard = (props: Posts) => {
           borderRadius: 50,
           opacity: 0.8,
         }}
-        onPress={() => handleToggleWishlist(props?.id)}
+        onPress={() => handleToggleWishlist(props?._id)}
       >
         <AntDesign
           name="heart"
           size={iconsizes.md}
-          color={wishlist?.includes(props?.id) ? color.primary : color.balck}
+          color={wishlist?.includes(props?._id) ? color.primary : color.balck}
         />
       </Pressable>
     </View>

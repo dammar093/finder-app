@@ -1,8 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export interface Category {
-  name: string;
   _id: string;
+  name: string;
+  isActive?: boolean;
 }
 
 interface CategoryState {
