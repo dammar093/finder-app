@@ -113,7 +113,7 @@ const PostCard = (props: Property) => {
           >
             Rs. {props?.price}
           </Text>
-          <Text>/${props?.duration_type}</Text>
+          <Text>/{props?.duration_type}</Text>
         </View>
       </View>
       <Pressable

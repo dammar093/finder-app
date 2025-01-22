@@ -6,10 +6,9 @@ import {
   Image,
   StatusBar,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { useLocalSearchParams } from "expo-router";
 import color from "@/constants/Colors";
-import { posts } from "../(tabs)";
 import fontsizes from "@/constants/Fontsizes";
 import Devider from "@/components/divider/Devider";
 import Fontisto from "@expo/vector-icons/Fontisto";
@@ -18,46 +17,16 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import Entypo from "@expo/vector-icons/Entypo";
 import ReviewCard from "@/components/reviewCard/ReviewCard";
 import PostCard from "@/components/postCard/PostCard";
-export interface ReviewsProps {
-  id: string;
-  review: string;
-  fullname: string;
-  profile: string;
-  date: Date;
-}
+import { UserState } from "@/redux/slices/userSlice";
+import { useSelector } from "react-redux";
+import { RootState } from "@/redux/store";
 
-const reviews: ReviewsProps[] = [
-  {
-    id: "1",
-    fullname: "John Doe",
-    profile:
-      "https://static.vecteezy.com/system/resources/previews/001/840/612/non_2x/picture-profile-icon-male-icon-human-or-people-sign-and-symbol-free-vector.jpg",
-    review:
-      "I returned to Ba Hao Residence after staying in the same room in 2017, and it was just as wonderful as I remembered. This place truly heals my soul, and I’m so happy to be back. Bua and Note are amazing, wonderful people, and every detail of the space reflects their care and passion. Highly recommend!",
-    date: new Date(new Date().getDate()),
-  },
-  {
-    id: "2",
-    fullname: "John Doe",
-    profile:
-      "https://static.vecteezy.com/system/resources/previews/001/840/612/non_2x/picture-profile-icon-male-icon-human-or-people-sign-and-symbol-free-vector.jpg",
-    review:
-      "I returned to Ba Hao Residence after staying in the same room in 2017, and it was just as wonderful as I remembered. This place truly heals my soul, and I’m so happy to be back. Bua and Note are amazing, wonderful people, and every detail of the space reflects their care and passion. Highly recommend!",
-    date: new Date(new Date().getDate()),
-  },
-  {
-    id: "3",
-    fullname: "John Doe",
-    profile:
-      "https://static.vecteezy.com/system/resources/previews/001/840/612/non_2x/picture-profile-icon-male-icon-human-or-people-sign-and-symbol-free-vector.jpg",
-    review:
-      "I returned to Ba Hao Residence after staying in the same room in 2017, and it was just as wonderful as I remembered. This place truly heals my soul, and I’m so happy to be back. Bua and Note are amazing, wonderful people, and every detail of the space reflects their care and passion. Highly recommend!",
-    date: new Date(new Date().getDate()),
-  },
-];
 const User = () => {
+  const properties = useSelector(
+    (state: RootState) => state.properties.properties
+  );
   const { id } = useLocalSearchParams();
-  const post = posts.find((post) => post?.user?.id == id);
+  const property = properties.find((property) => property?.user._id === id);
 
   return (
     <ScrollView
@@ -84,16 +53,30 @@ const User = () => {
                 borderWidth: 2,
                 borderColor: color.primary,
                 overflow: "hidden",
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-              <Image
-                width={120}
-                height={120}
-                source={{
-                  uri: post?.user?.profile,
-                }}
-                resizeMode="cover"
-              />
+              {property?.user?.profile ? (
+                <Image
+                  width={120}
+                  height={120}
+                  source={{
+                    uri: property?.user?.profile,
+                  }}
+                  resizeMode="cover"
+                />
+              ) : (
+                <Text
+                  style={{
+                    fontSize: 50,
+                    color: color.primary,
+                    fontWeight: "bold",
+                  }}
+                >
+                  {String(property?.user?.fullName[0])}
+                </Text>
+              )}
             </View>
             <Text
               style={{
@@ -102,7 +85,7 @@ const User = () => {
                 color: color.balck,
               }}
             >
-              {post?.user?.fullName.split(" ")[0]}
+              {property?.user?.fullName.split(" ")[0]}
             </Text>
           </View>
           <View
@@ -205,7 +188,7 @@ const User = () => {
           <Text
             style={{ fontSize: fontsizes.paragraph, fontWeight: "semibold" }}
           >
-            {post?.location}
+            {property?.location}
           </Text>
         </View>
       </View>
@@ -218,7 +201,7 @@ const User = () => {
             color: color.balck,
           }}
         >
-          {post?.user?.fullName?.split(" ")[0]}'s reviews
+          {property?.user?.fullName?.split(" ")[0]}'s reviews
         </Text>
         <ScrollView
           horizontal
@@ -232,7 +215,7 @@ const User = () => {
             alignItems: "center",
           }}
         >
-          {reviews.map(({ id, review, fullname, profile, date }) => (
+          {/* {reviews.map(({ id, review, fullname, profile, date }) => (
             <ReviewCard
               key={id}
               id={id}
@@ -241,7 +224,7 @@ const User = () => {
               profile={profile}
               date={date}
             />
-          ))}
+          ))} */}
         </ScrollView>
       </View>
       <Devider />
@@ -253,12 +236,12 @@ const User = () => {
             color: color.balck,
           }}
         >
-          {post?.user?.fullName?.split(" ")[0]}'s available assets
+          {property?.user?.fullName?.split(" ")[0]}'s available assets
         </Text>
         <View style={{ flex: 1, position: "relative" }}>
-          {posts.map((post) => (
+          {/* {property.map((post) => (
             <PostCard key={post?.id} {...post} />
-          ))}
+          ))} */}
         </View>
       </View>
       <StatusBar barStyle="dark-content" />

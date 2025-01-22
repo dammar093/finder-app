@@ -1,4 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { UserState } from "./userSlice";
+import { Category } from "./categorySlice";
 
 export interface Property {
   _id: string;
@@ -13,8 +15,8 @@ export interface Property {
   status: boolean;
   duration: number;
   duration_type: string;
-  category_id: string;
-  user_id: string;
+  category: Category;
+  user: UserState;
 }
 
 interface PropertyState {

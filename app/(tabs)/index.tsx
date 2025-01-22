@@ -129,7 +129,7 @@ const Home = () => {
                       borderRadius: 5,
                       padding: 3,
                       backgroundColor:
-                        i === index ? color.garyWhite : color.white,
+                        i === index ? color.lightPrimary : color.garyWhite,
                     }}
                   >
                     <Text

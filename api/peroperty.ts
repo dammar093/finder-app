@@ -8,6 +8,13 @@ const property = {
       }
     });
   },
+  getProperty: async (token: string, id: string) => {
+    return await axios.get(`${process.env.EXPO_PUBLIC_API_URL}/properties/${id}`, {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+  },
 }
 
 export default property;

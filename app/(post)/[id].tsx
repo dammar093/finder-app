@@ -7,25 +7,35 @@ import {
   Pressable,
   Linking,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocalSearchParams } from "expo-router";
-import { posts } from "../(tabs)";
 import AntDesign from "@expo/vector-icons/AntDesign";
 import iconsizes from "@/constants/IconSizes";
 import { useDispatch, useSelector } from "react-redux";
 import MapView, { Marker } from "react-native-maps";
-import { AppDispatch, RootState } from "@/redux/store";
+import { AppDispatch, RootState, selectToken } from "@/redux/store";
 import { togglePost } from "@/redux/slices/wishlist";
 import color from "@/constants/Colors";
 import fontsizes from "@/constants/Fontsizes";
 import Devider from "@/components/divider/Devider";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import { Property } from "@/redux/slices/propertySlice";
+import property from "@/api/peroperty";
 
 const Post = () => {
+  const [propertyData, setPropertyData] = useState<Property>();
   const { id } = useLocalSearchParams();
   const wishlist = useSelector((state: RootState) => state.wishlist.posts);
-  const post = posts.find((post) => post.id == id);
+  const { token } = useSelector(selectToken);
   const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    property.getProperty(token, id.toString()).then((res) => {
+      console.log(res.data.data);
+
+      setPropertyData(res.data?.data);
+    });
+  }, [id]);
 
   //function to handle toggle wishlist
   const handleToggleWishlist = (id: string) => {
@@ -46,7 +56,7 @@ const Post = () => {
             position: "relative",
           }}
         >
-          {post?.images.map((image, index) => (
+          {propertyData?.images.map((image, index) => (
             <View
               key={index}
               style={{
@@ -92,7 +102,7 @@ const Post = () => {
             color: color.balck,
           }}
         >
-          {post?.title}
+          {propertyData?.title}
         </Text>
         <Text
           style={{
@@ -101,7 +111,7 @@ const Post = () => {
             fontWeight: "semibold",
           }}
         >
-          {post?.location}
+          {propertyData?.location}
         </Text>
       </View>
       <Devider />
@@ -117,7 +127,7 @@ const Post = () => {
         <Link
           href={{
             pathname: "/(user)/[id]",
-            params: { id: post?.user?.id! },
+            params: { id: propertyData?.user?._id! },
           }}
         >
           <View
@@ -130,13 +140,25 @@ const Post = () => {
             }}
           >
             <View style={styles.profileContainer}>
-              <Image
-                style={{ width: 70, height: 70 }}
-                source={{
-                  uri: post?.user?.profile,
-                }}
-                resizeMode="cover"
-              />
+              {propertyData?.user?.profile ? (
+                <Image
+                  style={{ width: 70, height: 70 }}
+                  source={{
+                    uri: propertyData?.user?.profile,
+                  }}
+                  resizeMode="cover"
+                />
+              ) : (
+                <Text
+                  style={{
+                    fontSize: fontsizes.title,
+                    color: color.primary,
+                    fontWeight: "bold",
+                  }}
+                >
+                  {String(propertyData?.user?.fullName[0])}
+                </Text>
+              )}
             </View>
             <View>
               <Text
@@ -146,12 +168,12 @@ const Post = () => {
                   color: color.balck,
                 }}
               >
-                {post?.user?.fullName}
+                {propertyData?.user?.fullName}
               </Text>
               <Text
                 style={{ fontSize: fontsizes.span, color: color.lightBlack }}
               >
-                Host ● {post?.user?.year} years hosting
+                Host ● 7 years hosting
               </Text>
               <View
                 style={{ flexDirection: "row", alignItems: "center", gap: 2 }}
@@ -176,7 +198,7 @@ const Post = () => {
           <Pressable
             onPress={() =>
               Linking.openURL(
-                `whatsapp://send?phone=${post?.user?.phoneNumber}`
+                `whatsapp://send?phone=${propertyData?.user?.phoneNumber}`
               )
             }
           >
@@ -200,7 +222,7 @@ const Post = () => {
           Services:
         </Text>
         <View>
-          {post?.sevices?.map((service) => (
+          {propertyData?.services?.map((service) => (
             <Text
               style={{
                 fontSize: fontsizes.span,
@@ -224,7 +246,7 @@ const Post = () => {
             textAlign: "justify",
           }}
         >
-          {post?.description}
+          {propertyData?.description}
         </Text>
       </View>
       <View>
@@ -249,18 +271,18 @@ const Post = () => {
           <MapView
             style={{ flex: 1, borderRadius: 20 }}
             initialRegion={{
-              latitude: post?.latitude!,
-              longitude: post?.longitude!,
+              latitude: propertyData?.latitude!,
+              longitude: propertyData?.longitude!,
               latitudeDelta: 0.0045,
               longitudeDelta: 0.0045,
             }}
           >
             <Marker
               coordinate={{
-                latitude: post?.latitude!,
-                longitude: post?.longitude!,
+                latitude: propertyData?.latitude!,
+                longitude: propertyData?.longitude!,
               }}
-              title={post?.title}
+              title={propertyData?.title}
             />
           </MapView>
         </View>
@@ -283,5 +305,10 @@ const styles = StyleSheet.create({
     height: 70,
     borderRadius: "50%",
     overflow: "hidden",
+    borderWidth: 2,
+    borderColor: color.primary,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 2,
   },
 });

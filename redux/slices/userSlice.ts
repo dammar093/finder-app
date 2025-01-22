@@ -7,6 +7,7 @@ export interface UserState {
   phoneNumber: string,
   profile?: string,
   role: string
+  createdAt?: string,
 }
 const initialState: UserState = {
   fullName: "",
