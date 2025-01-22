@@ -6,78 +6,23 @@ import {
   TextInput,
   KeyboardAvoidingView,
   Platform,
-  Pressable,
   ScrollView,
   FlatList,
   TouchableOpacity,
 } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import color from "@/constants/Colors";
 import Feather from "@expo/vector-icons/Feather";
 import iconsizes from "@/constants/IconSizes";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import fontsizes from "@/constants/Fontsizes";
-import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
-import AntDesign from "@expo/vector-icons/AntDesign";
 import PostCard from "@/components/postCard/PostCard";
-interface Categories {
-  id: string;
-  name: string;
-  icon: React.ReactNode;
-}
-const categories: Categories[] = [
-  {
-    id: "1",
-    name: "Room",
-    icon: <Ionicons name="home" size={iconsizes.lg} color={color.lightBlack} />,
-  },
-  {
-    id: "2",
-    name: "Land",
-    icon: (
-      <MaterialCommunityIcons
-        name="island"
-        size={iconsizes.lg}
-        color={color.lightBlack}
-      />
-    ),
-  },
-  {
-    id: "3",
-    name: "Car",
-    icon: <AntDesign name="car" size={iconsizes.lg} color={color.lightBlack} />,
-  },
-  {
-    id: "4",
-    name: "Bike",
-    icon: (
-      <MaterialCommunityIcons
-        name="motorbike-electric"
-        size={iconsizes.lg}
-        color={color.lightBlack}
-      />
-    ),
-  },
-  {
-    id: "5",
-    name: "Mobile",
-    icon: (
-      <AntDesign name="mobile1" size={iconsizes.lg} color={color.lightBlack} />
-    ),
-  },
-  {
-    id: "6",
-    name: "Animal",
-    icon: (
-      <MaterialCommunityIcons
-        name="cow"
-        size={iconsizes.lg}
-        color={color.lightBlack}
-      />
-    ),
-  },
-];
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState, selectToken } from "@/redux/store";
+import property from "@/api/category";
+import { setCateGories } from "@/redux/slices/categorySlice";
+
 export interface User {
   fullName: string;
   role: string;
@@ -174,6 +119,22 @@ export const posts: Posts[] = [
 ];
 const Home = () => {
   const [index, setIndex] = React.useState(0);
+  const { token } = useSelector(selectToken);
+  const categories = useSelector(
+    (state: RootState) => state.categories.categories
+  );
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(() => {
+    // fetch categories from api
+    property
+      .getCategories(token)
+      .then((res) => {
+        dispatch(setCateGories(res.data?.data));
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAvoidingView
@@ -230,34 +191,41 @@ const Home = () => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={{
               height: 70,
-              gap: 45,
+              gap: 20,
               flexDirection: "row",
               alignItems: "center",
             }}
           >
-            {categories.map((category, i) => (
-              <TouchableOpacity onPress={() => setIndex(i)} key={category?.id}>
-                <View
-                  style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "100%",
-                  }}
+            {categories.length > 0 &&
+              categories.map((category, i) => (
+                <TouchableOpacity
+                  onPress={() => setIndex(i)}
+                  key={category._id}
                 >
-                  {React.cloneElement(category.icon as React.ReactElement, {
-                    color: i === index ? color.primary : color.lightBlack,
-                  })}
-                  <Text
+                  <View
                     style={{
-                      color: i === index ? color.primary : color.lightBlack,
-                      fontSize: fontsizes.span,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderRadius: 5,
+                      padding: 3,
+                      backgroundColor:
+                        i === index ? color.garyWhite : color.white,
                     }}
                   >
-                    {category.name}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))}
+                    <Text
+                      style={{
+                        color: i === index ? color.primary : color.lightBlack,
+                        fontSize: fontsizes.span,
+                        textTransform: "capitalize",
+                        padding: 6,
+                        fontWeight: "bold",
+                      }}
+                    >
+                      {category?.name}
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
           </ScrollView>
         </View>
         <View

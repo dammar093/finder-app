@@ -3,12 +3,14 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
 import tokenReducer from "@/redux/slices/tokenSlice";
 import userReducer from "@/redux/slices/userSlice";
 import wishlistReducer from "@/redux/slices/wishlist";
+import categoryReducer from "@/redux/slices/categorySlice";
 
 const store = configureStore({
   reducer: {
     token: tokenReducer,
     user: userReducer,
-    wishlist: wishlistReducer
+    wishlist: wishlistReducer,
+    categories: categoryReducer,
   },
 });
 
