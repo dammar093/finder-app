@@ -16,13 +16,15 @@ import iconsizes from "@/constants/IconSizes";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";
 import { togglePost } from "@/redux/slices/wishlist";
-import { Link } from "expo-router";
+import { useRouter } from "expo-router";
 import { Property } from "@/redux/slices/propertySlice";
+import * as Linking from "expo-linking";
 
 const PostCard = (props: Property) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const dispatch = useDispatch<AppDispatch>();
   const wishlist = useSelector((state: RootState) => state.wishlist.posts);
+  const router = useRouter();
 
   //function to handle scroll image
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
@@ -30,46 +32,54 @@ const PostCard = (props: Property) => {
     const index = Math.floor(contentOffsetX / 372);
     setCurrentIndex(index);
   };
+
   const handleToggleWishlist = (id: string) => {
     dispatch(togglePost(id));
   };
+
+  const handlePress = (id: string) => {
+    router.push({
+      pathname: "/(post)/[id]",
+      params: { id },
+    });
+  };
+
   return (
     <View style={styles.postCard}>
       <View style={{ width: "100%", height: 300, position: "relative" }}>
-        <ScrollView
-          horizontal
-          pagingEnabled
-          showsHorizontalScrollIndicator={false}
-          onScroll={handleScroll}
-          scrollEventThrottle={16}
-          contentContainerStyle={{
-            height: 300,
-            flexDirection: "row",
-            position: "relative",
-          }}
-        >
-          {(props?.images ?? []).map((image, index) => (
-            <Link
-              href={{
-                pathname: "/(post)/[id]",
-                params: { id: props?._id },
-              }}
-              key={index}
-              style={{
-                height: 300,
-                width: 372,
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <Image
-                source={{ uri: image }}
-                style={{ width: "100%", height: "100%", borderRadius: 10 }}
-                resizeMode="cover"
-              />
-            </Link>
-          ))}
-        </ScrollView>
+        {props?._id && (
+          <ScrollView
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onScroll={handleScroll}
+            scrollEventThrottle={16}
+            contentContainerStyle={{
+              height: 300,
+              flexDirection: "row",
+              position: "relative",
+            }}
+          >
+            {(props?.images).map((image, index) => (
+              <Pressable
+                onPress={() => handlePress(props?._id)}
+                key={index}
+                style={{
+                  height: 300,
+                  width: 372,
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <Image
+                  source={{ uri: image }}
+                  style={{ width: "100%", height: "100%", borderRadius: 10 }}
+                  resizeMode="cover"
+                />
+              </Pressable>
+            ))}
+          </ScrollView>
+        )}
         <View style={styles.dotsContainer}>
           {(props?.images ?? []).map((_, index) => (
             <View

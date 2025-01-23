@@ -15,7 +15,6 @@ import { setUser } from "@/redux/slices/userSlice";
 export default function App() {
   const router = useRouter();
   const dispatch = useDispatch<AppDispatch>();
-
   const { token } = useSelector(selectToken);
   useEffect(() => {
     getToken().then((res) => {
@@ -27,8 +26,6 @@ export default function App() {
 
   const getLoggedInUser = async () => {
     atuh.loggedInUser(token).then((res) => {
-      console.log(res.data.data);
-
       dispatch(setUser(res.data.data));
     });
   };

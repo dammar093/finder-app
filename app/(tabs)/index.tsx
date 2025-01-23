@@ -24,9 +24,11 @@ import { setCateGories } from "@/redux/slices/categorySlice";
 import category from "@/api/category";
 import property from "@/api/peroperty";
 import { setProperties } from "@/redux/slices/propertySlice";
+import Loader from "@/components/loader/Loader";
 
 const Home = () => {
   const [index, setIndex] = React.useState(0);
+  const [loading, setLoading] = React.useState(false);
   const { token } = useSelector(selectToken);
   const categories = useSelector(
     (state: RootState) => state.categories.categories
@@ -38,22 +40,28 @@ const Home = () => {
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     // fetch categories from api
+    setLoading(true);
     category
       .getCategories(token)
       .then((res) => {
         dispatch(setCateGories(res.data?.data));
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
+    setLoading(true);
     property
       .getProperties(token)
       .then((res) => {
         dispatch(setProperties(res.data?.data));
       })
-      .catch((err) => console.error(err));
+      .catch((err) => console.error(err))
+      .finally(() => setLoading(false));
   }, []);
+
+  if (loading) return <Loader />;
 
   return (
     <SafeAreaView style={styles.container}>
