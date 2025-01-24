@@ -40,140 +40,150 @@ const Home = () => {
   const dispatch = useDispatch<AppDispatch>();
   useEffect(() => {
     // fetch categories from api
-    setLoading(true);
-    category
-      .getCategories(token)
-      .then((res) => {
-        dispatch(setCateGories(res.data?.data));
-      })
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-  }, []);
+    if (token) {
+      setLoading(true);
+      category
+        .getCategories(token)
+        .then((res) => {
+          dispatch(setCateGories(res.data?.data));
+        })
+        .catch((err) => console.error(err))
+        .finally(() => setLoading(false));
+    }
+  }, [token]);
 
   useEffect(() => {
-    setLoading(true);
-    property
-      .getProperties(token)
-      .then((res) => {
-        dispatch(setProperties(res.data?.data));
-      })
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-  }, []);
+    if (token) {
+      setLoading(true);
+      property
+        .getProperties(token)
+        .then((res) => {
+          dispatch(setProperties(res.data?.data));
+        })
+        .catch((err) => console.error(err))
+        .finally(() => setLoading(false));
+    }
+  }, [token]);
 
   if (loading) return <Loader />;
 
   return (
-    <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "android" ? "padding" : "height"}
-        style={styles.container}
-      >
-        <View style={styles.topContainer}>
-          <View
-            style={{
-              width: "100%",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <View style={styles.inputWrapper}>
-              <Feather name="search" size={iconsizes.md} color={color.balck} />
-              <TextInput style={styles.search} placeholder="Search here." />
-            </View>
-            <View style={{ padding: 10 }}>
-              <Ionicons
-                name="notifications"
-                size={iconsizes.lg}
-                color={color.balck}
-              />
-              <View
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  width: 25,
-                  height: 25,
-                  right: 0,
-                  borderRadius: 50,
-                  backgroundColor: color.red,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  padding: 2,
-                }}
-              >
-                <Text
+    categories && (
+      <SafeAreaView style={styles.container}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "android" ? "padding" : "height"}
+          style={styles.container}
+        >
+          <View style={styles.topContainer}>
+            <View
+              style={{
+                width: "100%",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <View style={styles.inputWrapper}>
+                <Feather
+                  name="search"
+                  size={iconsizes.md}
+                  color={color.balck}
+                />
+                <TextInput style={styles.search} placeholder="Search here." />
+              </View>
+              <View style={{ padding: 10 }}>
+                <Ionicons
+                  name="notifications"
+                  size={iconsizes.lg}
+                  color={color.balck}
+                />
+                <View
                   style={{
-                    color: color.white,
-                    fontSize: fontsizes.span,
-                    fontWeight: "semibold",
+                    position: "absolute",
+                    top: 0,
+                    width: 25,
+                    height: 25,
+                    right: 0,
+                    borderRadius: 50,
+                    backgroundColor: color.red,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    padding: 2,
                   }}
                 >
-                  9+
-                </Text>
-              </View>
-            </View>
-          </View>
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{
-              height: 70,
-              gap: 20,
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            {categories.length > 0 &&
-              categories.map((category, i) => (
-                <TouchableOpacity
-                  onPress={() => setIndex(i)}
-                  key={category._id}
-                >
-                  <View
+                  <Text
                     style={{
-                      justifyContent: "center",
-                      alignItems: "center",
-                      borderRadius: 5,
-                      padding: 3,
-                      backgroundColor:
-                        i === index ? color.lightPrimary : color.garyWhite,
+                      color: color.white,
+                      fontSize: fontsizes.span,
+                      fontWeight: "semibold",
                     }}
                   >
-                    <Text
+                    9+
+                  </Text>
+                </View>
+              </View>
+            </View>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={{
+                height: 70,
+                gap: 20,
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              {categories.length > 0 &&
+                categories.map((category, i) => (
+                  <TouchableOpacity
+                    onPress={() => setIndex(i)}
+                    key={category._id}
+                  >
+                    <View
                       style={{
-                        color: i === index ? color.primary : color.lightBlack,
-                        fontSize: fontsizes.span,
-                        textTransform: "capitalize",
-                        padding: 6,
-                        fontWeight: "bold",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderRadius: 5,
+                        padding: 3,
+                        backgroundColor:
+                          i === index ? color.lightPrimary : color.garyWhite,
                       }}
                     >
-                      {category?.name}
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              ))}
-          </ScrollView>
-        </View>
-        <View
-          style={{
-            flex: 1,
-            paddingHorizontal: 10,
-            marginBottom: 35,
-          }}
-        >
-          <FlatList
-            data={properties}
-            renderItem={({ item }) => <PostCard {...item} key={item._id} />}
-            keyExtractor={(item) => item._id}
-            contentContainerStyle={{ paddingBottom: 65, gap: 20 }}
-            showsVerticalScrollIndicator={false}
-          />
-        </View>
-        <StatusBar barStyle="dark-content" />
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+                      <Text
+                        style={{
+                          color: i === index ? color.primary : color.lightBlack,
+                          fontSize: fontsizes.span,
+                          textTransform: "capitalize",
+                          padding: 6,
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {category?.name}
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+            </ScrollView>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              paddingHorizontal: 10,
+              marginBottom: 35,
+            }}
+          >
+            <FlatList
+              data={properties}
+              renderItem={({ item }) => <PostCard {...item} key={item._id} />}
+              keyExtractor={(item) => item._id}
+              contentContainerStyle={{ paddingBottom: 65, gap: 20 }}
+              showsVerticalScrollIndicator={false}
+            />
+          </View>
+          <StatusBar barStyle="dark-content" />
+        </KeyboardAvoidingView>
+      </SafeAreaView>
+    )
   );
 };
 

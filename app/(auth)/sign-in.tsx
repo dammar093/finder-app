@@ -94,7 +94,7 @@ const SignIn = () => {
           });
         })
         .catch((err) => {
-          setError(err?.response?.data?.message);
+          setError("Invalid email or password");
         })
         .finally(() => setLoading(false));
     }
