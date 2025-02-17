@@ -12,6 +12,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { Picker } from "@react-native-picker/picker";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 import * as Location from "expo-location";
@@ -19,6 +20,7 @@ import CustomInput from "@/components/custiomInput/CustomInput";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import iconsizes from "@/constants/IconSizes";
 import CustomButton from "@/components/customButton/CustomButton";
+import fontsizes from "@/constants/Fontsizes";
 
 const Post = () => {
   const [images, setImages] = useState<string[]>([]);
@@ -33,6 +35,8 @@ const Post = () => {
     longitude: number | null;
     latitude: number | null;
     price: number | null;
+    duration_type: string;
+    category: string;
   }>({
     images: [],
     title: "",
@@ -42,6 +46,8 @@ const Post = () => {
     location: "",
     longitude: null,
     latitude: null,
+    duration_type: "",
+    category: "",
   });
 
   useEffect(() => {
@@ -175,6 +181,75 @@ const Post = () => {
                   secureTextEntry={false}
                   type="number-pad"
                 />
+              </View>
+              <View>
+                <CustomInput
+                  onChangeText={(text) =>
+                    setFormValues((prevValues) => ({
+                      ...prevValues,
+                      price: parseFloat(text),
+                    }))
+                  }
+                  placeholder="Enter duration"
+                  value={formValues?.price}
+                  secureTextEntry={false}
+                  type="number-pad"
+                />
+              </View>
+
+              <View>
+                <Text
+                  style={{
+                    marginBottom: 10,
+                    fontSize: fontsizes.span,
+                    color: color.balck,
+                  }}
+                >
+                  Select Duration Type
+                </Text>
+                <View style={styles.pickerContainer}>
+                  <Picker
+                    selectedValue={formValues.duration_type}
+                    onValueChange={(itemValue) =>
+                      setFormValues((prevValues) => ({
+                        ...prevValues,
+                        durationType: itemValue,
+                      }))
+                    }
+                  >
+                    <Picker.Item label="Day" value="day" />
+                    <Picker.Item label="Week" value="week" />
+                    <Picker.Item label="Month" value="month" />
+                    <Picker.Item label="Year" value="year" />
+                  </Picker>
+                </View>
+              </View>
+              <View>
+                <Text
+                  style={{
+                    marginBottom: 10,
+                    fontSize: fontsizes.span,
+                    color: color.balck,
+                  }}
+                >
+                  Select Category
+                </Text>
+                <View style={styles.pickerContainer}>
+                  <Picker
+                    selectedValue={formValues.duration_type}
+                    onValueChange={(itemValue) =>
+                      setFormValues((prevValues) => ({
+                        ...prevValues,
+                        category: itemValue,
+                      }))
+                    }
+                  >
+                    <Picker.Item label="Room" value="room" />
+                    <Picker.Item label="Home" value="home" />
+                    <Picker.Item label="Car" value="car" />
+                    <Picker.Item label="bike" value="bike" />
+                  </Picker>
+                </View>
               </View>
               <View style={styles.serviceContainer}>
                 {services.map((service, index) => (
@@ -330,6 +405,10 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 300,
     textAlignVertical: "top",
+  },
+  pickerContainer: {
+    backgroundColor: "#F0F2F5",
+    borderRadius: 10,
   },
 });
 
